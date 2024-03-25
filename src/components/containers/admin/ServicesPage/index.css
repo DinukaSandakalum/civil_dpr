@@ -1,0 +1,27 @@
+/* ServicesPage.css */
+.services-page {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.service-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.service-item {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.service-item h2 {
+    color: #0056b3;
+}
+
+.service-item p {
+    color: #333;
+}

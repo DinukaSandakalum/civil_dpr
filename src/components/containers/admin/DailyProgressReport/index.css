@@ -1,0 +1,69 @@
+/* index.css */
+
+.daily-progress-report-container {
+    margin: 20px;
+}
+
+.daily-progress-report-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.daily-progress-report-container th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
+
+.daily-progress-report-container th {
+    background-color: lightgray;
+}
+
+.daily-progress-report-container input[type="text"],
+.daily-progress-report-container input[type="number"],
+.daily-progress-report-container select {
+    width: 100%;
+    padding: 8px;
+    margin: 4px 0;
+    box-sizing: border-box;
+}
+
+.daily-progress-report-container button {
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.daily-progress-report-container button:hover {
+    background-color: #45a049;
+}
+
+.add-row button {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.add-row td {
+    border: white;
+    padding: 1px;
+    text-align: right;
+}
+
+.save-record button {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.save-record  td {
+    border: white;
+    padding: 20px;
+    text-align: right;
+}
