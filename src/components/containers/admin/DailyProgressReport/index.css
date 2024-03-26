@@ -4,10 +4,10 @@
     margin: 20px;
 }
 
-.daily-progress-report-container table {
-    width: 100%;
-    border-collapse: collapse;
-}
+/*.daily-progress-report-container table {*/
+/*    width: 100%;*/
+/*    border-collapse: collapse;*/
+/*}*/
 
 .daily-progress-report-container th, td {
     border: 1px solid black;
@@ -50,7 +50,6 @@
 
 .add-row td {
     border: white;
-    padding: 1px;
     text-align: right;
 }
 
@@ -62,8 +61,38 @@
     cursor: pointer;
 }
 
-.save-record  td {
+.save-record {
     border: white;
     padding: 20px;
     text-align: right;
+}
+
+.sub-table-section {
+    display: flex;
+    justify-content: space-around; /* Adjusts the spacing between tables */
+    padding: 10px;
+    width: 100%;
+}
+
+.sub-tables{
+    flex: 1; /* Makes each table container take up equal space */
+    padding: 10px; /* Adds some space around the tables */
+    overflow-y: auto;
+    max-height: 100px;
+}
+
+.sub-tables tr td {
+    max-height: 10px;
+}
+
+.boq-item-table{
+    padding: 10px; /* Adds some space around the tables */
+    width: 100%;
+}
+
+.boq-item-table-section{
+    display: flex;
+    justify-content: space-around; /* Adjusts the spacing between tables */
+    padding: 10px;
+    width: 100%;
 }
