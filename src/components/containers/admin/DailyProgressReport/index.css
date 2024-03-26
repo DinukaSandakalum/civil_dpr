@@ -96,3 +96,23 @@
     padding: 10px;
     width: 100%;
 }
+
+.summary-table {
+    width: 100%;
+    padding: 10px;
+}
+
+.summary-table td, th{
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
+
+.summary-table th {
+    background-color: lightgray;
+}
+
+.summary-section {
+    padding: 10px;
+    width: 100%;
+}

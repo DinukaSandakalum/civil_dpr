@@ -4,19 +4,17 @@ import { useParams } from "react-router";
 import TopBar from "../../../templates/topBar";
 
 const DailyProgressReport = () => {
-    const { id } = useParams();
-
-    const [boqCodes, setBoqCodes] = useState([]);
+    const { name } = useParams();
+    const [boqItems, setBoqItems] = useState([]);
     const [selectedBoqCode, setSelectedBoqCode] = useState('');
     const [selectedBoqItem, setSelectedBoqItem] = useState('');
-    const [rowHeight, setRowHeight] = useState('1');
-    const [rows, setRows] = useState([]);
+    const [reportDate, setReportDate] = useState(Date.now);
     const mockBoqData = [
-        { code: '001', item: 'excavation' },
-        { code: '002', item: 'concreting' },
+        { item: 'excavation', code: '001'},
+        { item: 'concreting', code: '002'},
     ];
     const fetchBoqData = () => {
-        setBoqCodes(mockBoqData.map(boq => boq.code));
+        setBoqItems(mockBoqData.map(boq => boq.item));
         setSelectedBoqCode(mockBoqData[0].code);
         setSelectedBoqItem(mockBoqData[0].item);
     };
@@ -35,8 +33,25 @@ const DailyProgressReport = () => {
         }
     };
 
+    const handleDateChange = (e) => {
+        const date = e.target.value;
+        if(date){
+            setReportDate(date);
+        }
+    }
+
+    const handleBoqItemChange = (e) => {
+        const selectedBoq = e.target.value;
+        setSelectedBoqItem(selectedBoq);
+        const selectedCode = mockBoqData.find(boq => boq.item === selectedBoq);
+        if (selectedCode) {
+            setSelectedBoqCode(selectedCode.code);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
         console.log('Form submitted!');
     };
 
@@ -112,12 +127,18 @@ const DailyProgressReport = () => {
         }
     };
 
+    const maxLength = Math.max(materials.length, labours.length, machineries.length);
+
+    const labourTypes = ['skill', 'un-skill']
+    const machineTypes = ['Backhoe loader', '10 ton roller', 'Bob car', 'Motor grader']
+    const machineUOM = ['hrs', 'days', 'nos']
+
     return (
         <>
             <TopBar/>
             <div className="daily-progress-report-container">
-                <h1>Project Details</h1>
-                <h2>Project Name: Project {id}</h2>
+                <h1>Daily Progress Report</h1>
+                <h2>Project Name: {name}</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="boq-item-table-section">
                         <table className="boq-item-table">
@@ -130,17 +151,17 @@ const DailyProgressReport = () => {
                             </thead>
                             <tbody>
                             <tr>
-                                <td rowSpan={rowHeight}><input type="date" name="date" /></td>
-                                <td rowSpan={rowHeight}>
-                                    <select value={selectedBoqCode} onChange={handleBoqCodeChange}>
+                                <td rowSpan='2'><input type="date" name="date" onChange={handleDateChange}/></td>
+                                <td rowSpan='2'>
+                                    <span>{selectedBoqCode}</span>
+                                </td>
+                                <td rowSpan='2'>
+                                    <select value={selectedBoqItem} onChange={handleBoqItemChange}>
                                         <option value="" disabled>Select BOQ Item</option>
-                                        {boqCodes.map(item => (
+                                        {boqItems.map(item => (
                                             <option key={item} value={item}>{item}</option>
                                         ))}
                                     </select>
-                                </td>
-                                <td rowSpan={rowHeight}>
-                                    <span>{selectedBoqItem}</span>
                                 </td>
                             </tr>
                             </tbody>
@@ -184,6 +205,7 @@ const DailyProgressReport = () => {
                                     <td>
                                         <input
                                             type="number"
+                                            step="0.01"
                                             name="materialQuantity"
                                             placeholder="Quantity"
                                             value={material.materialQuantity}
@@ -201,39 +223,35 @@ const DailyProgressReport = () => {
                         <table className="sub-tables">
                             <thead>
                             <tr>
-                                <th colSpan="3">Labour</th>
+                                <th colSpan="2">Labour</th>
                                 <th rowSpan="2">Action</th>
                             </tr>
                             <tr>
                                 <th>Type</th>
-                                <th>UOM</th>
-                                <th>Quantity</th>
+                                <th>Quantity (hrs)</th>
                             </tr>
                             </thead>
                             <tbody>
                             {labours.map((labour, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <input
-                                            type="text"
-                                            name="labourType"
-                                            placeholder="Type"
-                                            value={labour.labourType}
-                                            onChange={(e) => handleLabourInputChange(e, index)}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            name="labourUOM"
-                                            placeholder="UOM"
-                                            value={labour.labourUOM}
-                                            onChange={(e) => handleLabourInputChange(e, index)}
-                                        />
+                                        <select type="text"
+                                                name="labourType"
+                                                placeholder="Type"
+                                                value={labour.labourType}
+                                                onChange={(e) => handleLabourInputChange(e, index)}>
+                                            <option value="" disabled>Select labour type</option>
+                                            {labourTypes.map((item, index) => (
+                                                <option key={index} value={item}>
+                                                    {item}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </td>
                                     <td>
                                         <input
                                             type="number"
+                                            step="0.1"
                                             name="labourQuantity"
                                             placeholder="Quantity"
                                             value={labour.labourQuantity}
@@ -290,6 +308,7 @@ const DailyProgressReport = () => {
                                     <td>
                                         <input
                                             type="number"
+                                            step="0.01"
                                             name="machineQuantity"
                                             placeholder="Quantity"
                                             value={machinery.machineQuantity}
@@ -309,6 +328,90 @@ const DailyProgressReport = () => {
                         <button type="submit">Save Record</button>
                     </div>
                 </form>
+            </div>
+
+            <div className="summary-section">
+                <h1>Daily Progress Summary</h1>
+                <table className="summary-table">
+                    <thead>
+                    <tr>
+                        <th rowSpan="2">No</th>
+                        <th rowSpan="2">Date</th>
+                        <th rowSpan="2">BOQ Code</th>
+                        <th rowSpan="2">BOQ Name</th>
+                        <th colSpan="3">Material</th>
+                        <th colSpan="2">Labour</th>
+                        <th colSpan="3">Machinery</th>
+                    </tr>
+                    <tr>
+                        <th>Type</th>
+                        <th>UOM</th>
+                        <th>Quantity</th>
+                        <th>Type</th>
+                        <th>Quantity (hrs)</th>
+                        <th>Type</th>
+                        <th>UOM</th>
+                        <th>Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {/* Render rows for each material, labour, and machinery */}
+                    {[...Array(maxLength).keys()].map((index) => (
+                        <tr key={`row_${index}`}>
+                            {/* Render No, Date, BOQ Code, and BOQ Name for the first row */}
+                            {index === 0 && (
+                                <>
+                                    <td rowSpan={maxLength}>1</td>
+                                    <td rowSpan={maxLength}>{reportDate}</td>
+                                    <td rowSpan={maxLength}>{selectedBoqCode}</td>
+                                    <td rowSpan={maxLength}>{selectedBoqItem}</td>
+                                </>
+                            )}
+                            {/* Render material data or placeholder */}
+                            {materials[index] ? (
+                                <>
+                                    <td>{materials[index].materialType}</td>
+                                    <td>{materials[index].materialUOM}</td>
+                                    <td>{materials[index].materialQuantity}</td>
+                                </>
+                            ) : (
+                                <>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </>
+                            )}
+                            {/* Render labour data or placeholder */}
+                            {labours[index] ? (
+                                <>
+                                    <td>{labours[index].labourType}</td>
+                                    <td>{labours[index].labourQuantity}</td>
+                                </>
+                            ) : (
+                                <>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </>
+                            )}
+                            {/* Render machinery data or placeholder */}
+                            {machineries[index] ? (
+                                <>
+                                    <td>{machineries[index].machineType}</td>
+                                    <td>{machineries[index].machineUOM}</td>
+                                    <td>{machineries[index].machineQuantity}</td>
+                                </>
+                            ) : (
+                                <>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </>
+                            )}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+
             </div>
         </>
     );

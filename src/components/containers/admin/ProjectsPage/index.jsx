@@ -24,7 +24,7 @@ const ProjectsPage = () => {
         },
         {
             id: 3,
-            name: 'Express way',
+            name: 'Ruwanpura Express Way',
             location: 'Horana, Colombo',
             duration: '2021 - 2023',
             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.',
@@ -41,7 +41,7 @@ const ProjectsPage = () => {
                 <div className="project-list">
                     {projects.map((project) => (
                         <div key={project.id} className="project-item">
-                            <Link to={`/projects/${project.id}`}>
+                            <Link to={`/projects/${project.name}`}>
                                 <img src={project.image} alt={project.name} />
                             </Link>
                             <div className="project-details">
