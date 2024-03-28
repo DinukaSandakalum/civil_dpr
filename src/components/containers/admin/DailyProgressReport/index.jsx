@@ -51,7 +51,17 @@ const DailyProgressReport = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
+        const newData = {
+            no: 1,
+            date: reportDate,
+            boqCode: selectedBoqCode,
+            boqName: selectedBoqItem,
+            materials: materials,
+            labours: labours,
+            machinery: machineries
+        };
+        setData([...data, newData]);
+        console.log(data);
         console.log('Form submitted!');
     };
 
@@ -127,11 +137,15 @@ const DailyProgressReport = () => {
         }
     };
 
+    let num = 0;
+
     const maxLength = Math.max(materials.length, labours.length, machineries.length);
 
     const labourTypes = ['skill', 'un-skill']
     const machineTypes = ['Backhoe loader', '10 ton roller', 'Bob car', 'Motor grader']
     const machineUOM = ['hrs', 'days', 'nos']
+
+    const [data, setData] = useState([]);
 
     return (
         <>
@@ -355,60 +369,46 @@ const DailyProgressReport = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {/* Render rows for each material, labour, and machinery */}
-                    {[...Array(maxLength).keys()].map((index) => (
-                        <tr key={`row_${index}`}>
-                            {/* Render No, Date, BOQ Code, and BOQ Name for the first row */}
-                            {index === 0 && (
-                                <>
-                                    <td rowSpan={maxLength}>1</td>
-                                    <td rowSpan={maxLength}>{reportDate}</td>
-                                    <td rowSpan={maxLength}>{selectedBoqCode}</td>
-                                    <td rowSpan={maxLength}>{selectedBoqItem}</td>
-                                </>
-                            )}
-                            {/* Render material data or placeholder */}
-                            {materials[index] ? (
-                                <>
-                                    <td>{materials[index].materialType}</td>
-                                    <td>{materials[index].materialUOM}</td>
-                                    <td>{materials[index].materialQuantity}</td>
-                                </>
-                            ) : (
-                                <>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                </>
-                            )}
-                            {/* Render labour data or placeholder */}
-                            {labours[index] ? (
-                                <>
-                                    <td>{labours[index].labourType}</td>
-                                    <td>{labours[index].labourQuantity}</td>
-                                </>
-                            ) : (
-                                <>
-                                    <td>-</td>
-                                    <td>-</td>
-                                </>
-                            )}
-                            {/* Render machinery data or placeholder */}
-                            {machineries[index] ? (
-                                <>
-                                    <td>{machineries[index].machineType}</td>
-                                    <td>{machineries[index].machineUOM}</td>
-                                    <td>{machineries[index].machineQuantity}</td>
-                                </>
-                            ) : (
-                                <>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                </>
-                            )}
-                        </tr>
-                    ))}
+                    {
+
+                        data.map((record, index) => {
+                            num++;
+                            const len = Math.max(record.materials.length, record.labours.length, record.machinery.length);
+                            console.log('len: ', len);
+                            const arrays = [record.materials, record.labours, record.machinery];
+                            console.log('arrays: ', arrays);
+                            let maxArray = record.materials;
+                            console.log('maxArray: ', maxArray);
+                            for (let i = 1; i < 3; i++){
+                                if (maxArray.length < arrays[i].length){
+                                    maxArray = arrays[i];
+                                }
+                            }
+                            console.log('maxArray: ', maxArray);
+                            return maxArray.map((item, itemIndex) =>
+                                <tr key={'row_${itemIndex}'}>
+                                    {console.log('aaaaaaaaaa')}
+                                    {itemIndex === 0 && (
+                                        <>
+                                            {console.log('record: ', record)}
+                                            <td rowSpan={len}>{num}</td>
+                                            <td rowSpan={len}>{record.date}</td>
+                                            <td rowSpan={len}>{record.boqCode}</td>
+                                            <td rowSpan={len}>{record.boqName}</td>
+                                        </>
+                                    )}
+                                        <td>{record.materials[itemIndex]? record.materials[itemIndex].materialType : '-'}</td>
+                                        <td>{record.materials[itemIndex]? record.materials[itemIndex].materialUOM : '-'}</td>
+                                        <td>{record.materials[itemIndex]? record.materials[itemIndex].materialQuantity : '-'}</td>
+                                        <td>{record.labours[itemIndex]? record.labours[itemIndex].labourType : '-'}</td>
+                                        <td>{record.labours[itemIndex]? record.labours[itemIndex].labourQuantity : '-'}</td>
+                                        <td>{record.machinery[itemIndex]? record.machinery[itemIndex].machineType : '-'}</td>
+                                        <td>{record.machinery[itemIndex]? record.machinery[itemIndex].machineUOM : '-'}</td>
+                                        <td>{record.machinery[itemIndex]? record.machinery[itemIndex].machineQuantity : '-'}</td>
+                                </tr>
+                            );
+                        })
+                    }
                     </tbody>
                 </table>
 
