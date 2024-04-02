@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './index.css';
 import { useParams } from "react-router";
 import TopBar from "../../../templates/topBar";
+import { useDispatch, useSelector } from 'react-redux';
+import {fetchBoqRequest} from "../../../../redux/actions/boq/boqActions";
 
 const DailyProgressReport = () => {
     const { name } = useParams();
@@ -9,43 +11,32 @@ const DailyProgressReport = () => {
     const [selectedBoqCode, setSelectedBoqCode] = useState('');
     const [selectedBoqItem, setSelectedBoqItem] = useState('');
     const [reportDate, setReportDate] = useState(Date.now);
-    const mockBoqData = [
-        { item: 'excavation', code: '001'},
-        { item: 'concreting', code: '002'},
-    ];
-    const fetchBoqData = () => {
-        setBoqItems(mockBoqData.map(boq => boq.item));
-        setSelectedBoqCode(mockBoqData[0].code);
-        setSelectedBoqItem(mockBoqData[0].item);
-    };
+    const dispatch = useDispatch();
+    const boqList = useSelector(state => state.boq.boqList);
 
     useEffect(() => {
-        fetchBoqData();
+        dispatch(fetchBoqRequest());
     }, []);
 
-    const handleBoqCodeChange = (e) => {
-        const selectedCode = e.target.value;
-        setSelectedBoqCode(selectedCode);
-        // Find corresponding BOQ item for the selected code
-        const selectedBoq = mockBoqData.find(boq => boq.code === selectedCode);
-        if (selectedBoq) {
-            setSelectedBoqItem(selectedBoq.item);
-        }
-    };
+    useEffect(() => {
+        setBoqItems(boqList.map(boq => boq.boqDescription));
+        setSelectedBoqCode(boqList.length > 0 ? boqList[0].boqCode : '');
+        setSelectedBoqItem(boqList.length > 0 ? boqList[0].boqDescription : '');
+    }, [boqList]);
 
     const handleDateChange = (e) => {
         const date = e.target.value;
         if(date){
             setReportDate(date);
         }
-    }
+    };
 
     const handleBoqItemChange = (e) => {
         const selectedBoq = e.target.value;
         setSelectedBoqItem(selectedBoq);
-        const selectedCode = mockBoqData.find(boq => boq.item === selectedBoq);
+        const selectedCode = boqList.find(boq => boq.boqDescription === selectedBoq);
         if (selectedCode) {
-            setSelectedBoqCode(selectedCode.code);
+            setSelectedBoqCode(selectedCode.boqCode);
         }
     };
 
@@ -139,11 +130,10 @@ const DailyProgressReport = () => {
 
     let num = 0;
 
-    const maxLength = Math.max(materials.length, labours.length, machineries.length);
-
-    const labourTypes = ['skill', 'un-skill']
-    const machineTypes = ['Backhoe loader', '10 ton roller', 'Bob car', 'Motor grader']
-    const machineUOM = ['hrs', 'days', 'nos']
+    const labourTypes = ['skill', 'un-skill'];
+    const machineTypes = ['Backhoe loader', '10 ton roller', 'Bob cat', 'Motor grader'];
+    const machineUOM = ['hrs', 'days', 'nos'];
+    const materialUOM = ['cum', 'nos'];
 
     const [data, setData] = useState([]);
 
@@ -208,13 +198,14 @@ const DailyProgressReport = () => {
                                         />
                                     </td>
                                     <td>
-                                        <input
-                                            type="text"
-                                            name="materialUOM"
-                                            placeholder="UOM"
-                                            value={material.materialUOM}
-                                            onChange={(e) => handleMaterialInputChange(e, index)}
-                                        />
+                                        <select value={material.materialUOM}
+                                                name="materialUOM"
+                                                onChange={(e) => handleMaterialInputChange(e, index)}>
+                                            <option value="" disabled>uom</option>
+                                            {materialUOM.map(item => (
+                                                <option key={item} value={item}>{item}</option>
+                                            ))}
+                                        </select>
                                     </td>
                                     <td>
                                         <input
@@ -302,22 +293,24 @@ const DailyProgressReport = () => {
                             {machineries.map((machinery, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <input
-                                            type="text"
-                                            name="machineType"
-                                            placeholder="Type"
-                                            value={machinery.machineType}
-                                            onChange={(e) => handleMachineInputChange(e, index)}
-                                        />
+                                        <select value={machinery.machineType}
+                                                name="machineType"
+                                                onChange={(e) => handleMachineInputChange(e, index)}>
+                                            <option value="" disabled>machine</option>
+                                            {machineTypes.map(item => (
+                                                <option key={item} value={item}>{item}</option>
+                                            ))}
+                                        </select>
                                     </td>
                                     <td>
-                                        <input
-                                            type="text"
-                                            name="machineUOM"
-                                            placeholder="UOM"
-                                            value={machinery.machineUOM}
-                                            onChange={(e) => handleMachineInputChange(e, index)}
-                                        />
+                                        <select value={machinery.machineUOM}
+                                                name="machineUOM"
+                                                onChange={(e) => handleMachineInputChange(e, index)}>
+                                            <option value="" disabled>uom</option>
+                                            {machineUOM.map(item => (
+                                                <option key={item} value={item}>{item}</option>
+                                            ))}
+                                        </select>
                                     </td>
                                     <td>
                                         <input
