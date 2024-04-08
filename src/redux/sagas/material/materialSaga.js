@@ -24,6 +24,7 @@ function* fetchMaterialSaga() {
     try {
         const response = yield call(fetchMaterialApi);
         const materialList = response.responseBody.map(item => ({
+            materialId: item.materialId,
             materialName: item.materialName,
             materialUom: item.uom,
             materialRate: item.materialRate,

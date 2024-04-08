@@ -24,6 +24,7 @@ function* fetchLabourSaga() {
     try {
         const response = yield call(fetchLabourApi);
         const labourList = response.responseBody.map(item => ({
+            labourId: item.labourId,
             labourType: item.labourType,
             labourRate: item.labourRate,
         }));

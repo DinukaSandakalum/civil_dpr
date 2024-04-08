@@ -8,12 +8,16 @@ import Spinner from "../../../templates/Spinner";
 import {fetchLabourRequest} from "../../../../redux/actions/labour/labourActions";
 import {fetchMaterialRequest} from "../../../../redux/actions/material/materialActions";
 import {fetchMachineryRequest} from "../../../../redux/actions/machinery/machineryActions";
+import {fetchUserRequest} from "../../../../redux/actions/user/userActions";
+import {fetchWorkItemRequest} from "../../../../redux/actions/workItem/workItemActions";
+import {createWorkSummaryRequest} from "../../../../redux/actions/workSummary/workSummaryActions";
 
 const DailyProgressReport = () => {
     const { name } = useParams();
     const [boqItems, setBoqItems] = useState([]);
     const [selectedBoqCode, setSelectedBoqCode] = useState('');
     const [selectedBoqItem, setSelectedBoqItem] = useState('');
+    const [inputBoqQuantity, setInputBoqQuantity] = useState('');
     const [selectedMaterialType, setSelectedMaterialType] = useState('');
     const [selectedMaterialUom, setSelectedMaterialUom] = useState('');
     const [selectedMachineryType, setSelectedMachineryType] = useState('');
@@ -24,21 +28,28 @@ const DailyProgressReport = () => {
     const [machineryTypes, setmachineryTypes] = useState([]);
     const [machineryUoms, setmachineryUoms] = useState([]);
     const [reportDate, setReportDate] = useState(Date.now);
+    const [selectedWorkItem, setSelectedWorkItem] = useState('');
     const dispatch = useDispatch();
     const boqList = useSelector(state => state.boq.boqList);
     const boqLoading = useSelector(state => state.boq.loading);
     const materialList = useSelector(state => state.material.materialList);
     const labourList = useSelector(state => state.labour.labourList);
     const machineryList = useSelector(state => state.machinery.machineryList);
+    const user = useSelector(state => state.user);
+    const workItemList = useSelector(state => state.workItem.workItemList);
+    const [workItemDescriptions, setWorkItemDescriptions] = useState([]);
 
     useEffect(() => {
         dispatch(fetchBoqRequest());
         dispatch(fetchLabourRequest());
         dispatch(fetchMaterialRequest());
         dispatch(fetchMachineryRequest());
+        dispatch(fetchUserRequest('dinuka', '123'));
+        dispatch(fetchWorkItemRequest());
     }, []);
 
     useEffect(() => {
+        console.log('user', user);
         setBoqItems(boqList.map(boq => boq.boqDescription));
         setMaterialTypes(materialList.map(material => material.materialName));
         setMaterialUoms(materialList.map(material => material.materialUom));
@@ -47,6 +58,7 @@ const DailyProgressReport = () => {
         setmachineryUoms(machineryList.map(machinery => machinery.machineryUom));
         setSelectedBoqCode(boqList.length > 0 ? boqList[0].boqCode : '');
         setSelectedBoqItem(boqList.length > 0 ? boqList[0].boqDescription : '');
+        setWorkItemDescriptions(workItemList.map(workItem => workItem.workDescription));
     }, [boqList]);
 
     const handleDateChange = (e) => {
@@ -65,13 +77,25 @@ const DailyProgressReport = () => {
         }
     };
 
+    const handleBoqQuantityChange = (e) => {
+        const boqQuantity = e.target.value;
+        setInputBoqQuantity(boqQuantity);
+    };
+
+    const handleWorkItemChange = (e) => {
+        const selectedWorkItem = e.target.value;
+        setSelectedWorkItem(selectedWorkItem);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const newData = {
             no: 1,
+            workItem: selectedWorkItem,
             date: reportDate,
             boqCode: selectedBoqCode,
             boqName: selectedBoqItem,
+            boqQuantity: inputBoqQuantity,
             materials: materials,
             labours: labours,
             machinery: machineries
@@ -177,12 +201,76 @@ const DailyProgressReport = () => {
 
     let num = 0;
 
-    // // const labourTypes = ['skill', 'un-skill'];
-    // const machineryTypes = ['Backhoe loader', '10 ton roller', 'Bob cat', 'Motor grader'];
-    // const machineryUoms = ['hrs', 'days', 'nos'];
-    // const materialUoms = ['cum', 'nos'];
-
     const [data, setData] = useState([]);
+
+    function handleSubmitSummary() {
+
+        const workSummaryList = [];
+        data.forEach(item =>{
+            const summaryWorkItem = workItemList.find(workItem => workItem.workDescription === item.workItem);
+            const workItemId = summaryWorkItem.workItemId;
+            const summaryBoqItem = boqList.find(boqItem => boqItem.boqCode === item.boqCode);
+            const boqItemId = summaryBoqItem.boqId;
+            const date = item.date;
+            const userId = user.user.responseBody.userId;
+            const labourItemList = [];
+            const machineryItemList = [];
+            const materialItemList = [];
+            console.log("labourList: ", labourList);
+            item.labours.forEach(labour => {
+                const labourObject = {
+                    "labourId": labourList.find(labourItem => labourItem.labourType === labour.labourType).labourId,
+                    "quantity": labour.labourQuantity
+                };
+                console.log("labour: ",labourObject);
+                labourItemList.push(labourObject);
+            });
+            console.log("machineryList: ", machineryList);
+            item.machinery.forEach(machine => {
+                const machineryObject = {
+                    "machineryId": machineryList.find(machineryItem => machineryItem.machineryType === machine.machineType).machineryId,
+                    "quantity": machine.machineQuantity
+                };
+                console.log("machineryObject: ",machineryObject);
+                machineryItemList.push(machineryObject);
+            });
+            console.log("materialList: ", materialList);
+            item.materials.forEach(material => {
+                const materialObject = {
+                    "materialId": materialList.find(materialItem => materialItem.materialName === material.materialType).materialId,
+                    "quantity": material.materialQuantity
+                };
+                console.log("materialObject: ",materialObject);
+                materialItemList.push(materialObject);
+            });
+            const workSummaryObject = {
+                "workItemId": workItemId,
+                "workDate": date,
+                "boqId": boqItemId,
+                "completedQuantity": item.boqQuantity,
+                "usedMaterialDetailList": materialItemList,
+                "usedMachineryDetailList": machineryItemList,
+                "usedLabourDetailList": labourItemList,
+                "userId": userId
+            };
+            workSummaryList.push(workSummaryObject);
+
+        });
+
+        const requestBody = {
+            "requestBody": {
+                "workSummaryCreateDetailList": workSummaryList
+            },
+            "requestHeader": {
+                "requestId": "1676541979935",
+                "timestamp": "2023-02-16T10:06:17.152Z",
+                "channel": "dpr-ui",
+                "userId": "10"
+            }
+        };
+
+        dispatch(createWorkSummaryRequest(requestBody));
+    }
 
     return (
         <>
@@ -194,6 +282,16 @@ const DailyProgressReport = () => {
                             <h1>Daily Progress Report</h1>
                             <h2>Project Name: {name}</h2>
                             <form onSubmit={handleSubmit}>
+                                <div className="work-item-section">
+                                    <h4>Work Item</h4>
+                                    <select value={selectedWorkItem} onChange={handleWorkItemChange}>
+                                        <option value="" disabled>Select Work Item</option>
+                                        {workItemDescriptions.map(item => (
+                                            <option key={item} value={item}>{item}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
                                 <div className="boq-item-table-section">
                                     <table className="boq-item-table">
                                         <thead>
@@ -218,7 +316,7 @@ const DailyProgressReport = () => {
                                                     ))}
                                                 </select>
                                             </td>
-                                            <td rowSpan='2'><input type="text" name="quantity"/></td>
+                                            <td rowSpan='2'><input type="text" name="quantity" onChange={handleBoqQuantityChange}/></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -382,6 +480,7 @@ const DailyProgressReport = () => {
                                 <thead>
                                 <tr>
                                     <th rowSpan="2">No</th>
+                                    <th rowSpan="2">WorkItem</th>
                                     <th rowSpan="2">Date</th>
                                     <th rowSpan="2">BOQ Code</th>
                                     <th rowSpan="2">BOQ Name</th>
@@ -424,6 +523,7 @@ const DailyProgressReport = () => {
                                                     <>
                                                         {console.log('record: ', record)}
                                                         <td rowSpan={len}>{num}</td>
+                                                        <td rowSpan={len}>{record.workItem}</td>
                                                         <td rowSpan={len}>{record.date}</td>
                                                         <td rowSpan={len}>{record.boqCode}</td>
                                                         <td rowSpan={len}>{record.boqName}</td>
@@ -443,7 +543,9 @@ const DailyProgressReport = () => {
                                 }
                                 </tbody>
                             </table>
-
+                            <div className="save-record">
+                                <button type="submit" onClick={handleSubmitSummary}>Submit summary</button>
+                            </div>
                         </div>)
                     </>)
                 }

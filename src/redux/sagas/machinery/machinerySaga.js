@@ -24,6 +24,7 @@ function* fetchMachinerySaga() {
     try {
         const response = yield call(fetchMachineryApi);
         const machineryList = response.responseBody.map(item => ({
+            machineryId: item.machineryId,
             machineryType: item.machineryType,
             machineryUom: item.uom,
             machineryRate: item.machineryRate,

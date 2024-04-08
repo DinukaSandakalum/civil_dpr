@@ -24,6 +24,7 @@ function* fetchBoqSaga() {
     try {
         const response = yield call(fetchBoqApi);
         const boqList = response.responseBody.map(item => ({
+            boqId: item.boqId,
             boqCode: item.boqCode,
             boqDescription: item.boqDescription,
         }));
