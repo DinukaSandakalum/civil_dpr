@@ -14,6 +14,8 @@ import workSummaryReducer from "../reducers/workSummary/workSummaryReducer";
 import {workSummarySaga} from "../sagas/workSummary/workSummarySaga";
 import workItemReducer from "../reducers/workItem/workItemReducer";
 import {workItemSaga} from "../sagas/workItem/workItemSaga";
+import workSummaryListReducer from "../reducers/workSummary/workSummaryListReducer";
+import {workSummaryListSaga} from "../sagas/workSummary/workSummaryListSaga";
 
 const reducer = combineReducers({
     boq: boqReducer,
@@ -22,6 +24,7 @@ const reducer = combineReducers({
     machinery: machineryReducer,
     user: userReducer,
     workSummary: workSummaryReducer,
+    workSummaryList: workSummaryListReducer,
     workItem: workItemReducer
 });
 
@@ -39,5 +42,6 @@ sagaMiddleware.run(machinerySaga);
 sagaMiddleware.run(userSaga);
 sagaMiddleware.run(workSummarySaga);
 sagaMiddleware.run(workItemSaga);
+sagaMiddleware.run(workSummaryListSaga);
 
 export default store;

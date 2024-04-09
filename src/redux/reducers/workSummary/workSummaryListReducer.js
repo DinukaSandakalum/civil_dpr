@@ -1,33 +1,30 @@
 import {
-    CREATE_WORK_SUMMARY_REQUEST,
-    CREATE_WORK_SUMMARY_SUCCESS,
-    CREATE_WORK_SUMMARY_FAILURE,
     FETCH_WORK_SUMMARY_FAILURE, FETCH_WORK_SUMMARY_SUCCESS, FETCH_WORK_SUMMARY_REQUEST
 } from '../../actions/actionTypes';
 
 const initialState = {
     loading: false,
-    workSummary: [],
+    workSummaryList: [],
     error: '',
 };
 
-const workSummaryReducer = (state = initialState, action) => {
+const workSummaryListReducer = (state = initialState, action) => {
     switch (action.type) {
-        case CREATE_WORK_SUMMARY_REQUEST:
+        case FETCH_WORK_SUMMARY_REQUEST:
             return {
                 ...state,
                 loading: true,
             };
-        case CREATE_WORK_SUMMARY_SUCCESS:
+        case FETCH_WORK_SUMMARY_SUCCESS:
             return {
                 loading: false,
-                workSummary: action.payload,
+                workSummaryList: action.payload,
                 error: '',
             };
-        case CREATE_WORK_SUMMARY_FAILURE:
+        case FETCH_WORK_SUMMARY_FAILURE:
             return {
                 loading: false,
-                workSummary: null,
+                workSummaryList: [],
                 error: action.payload,
             };
         default:
@@ -35,4 +32,4 @@ const workSummaryReducer = (state = initialState, action) => {
     }
 };
 
-export default workSummaryReducer;
+export default workSummaryListReducer;

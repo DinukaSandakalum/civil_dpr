@@ -11,6 +11,7 @@ import {fetchMachineryRequest} from "../../../../redux/actions/machinery/machine
 import {fetchUserRequest} from "../../../../redux/actions/user/userActions";
 import {fetchWorkItemRequest} from "../../../../redux/actions/workItem/workItemActions";
 import {createWorkSummaryRequest} from "../../../../redux/actions/workSummary/workSummaryActions";
+import SummaryPage from "../SummaryPage";
 
 const DailyProgressReport = () => {
     const { name } = useParams();
@@ -44,7 +45,6 @@ const DailyProgressReport = () => {
         dispatch(fetchLabourRequest());
         dispatch(fetchMaterialRequest());
         dispatch(fetchMachineryRequest());
-        dispatch(fetchUserRequest('dinuka', '123'));
         dispatch(fetchWorkItemRequest());
     }, []);
 
@@ -549,6 +549,9 @@ const DailyProgressReport = () => {
                         </div>)
                     </>)
                 }
+            </div>
+            <div>
+                <SummaryPage/>
             </div>
         </>
     );

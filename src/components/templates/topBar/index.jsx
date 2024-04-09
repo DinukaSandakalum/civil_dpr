@@ -17,8 +17,13 @@ const TopBar = () => {
                         <li><Link to="/services">Services</Link></li>
                         <li><Link to="/contact">Contact</Link></li>
                         {
-                            (user && user.user && user.user.responseBody && user.user.responseBody.userRole === 'ADMIN'?
+                            (user && user.user && user.user.responseBody && (user.user.responseBody.userRole === 'ADMIN' || user.user.responseBody.userRole === 'USER' || user.user.responseBody.userRole === 'PM')?
                                     <li><Link to="/projects">Projects</Link></li> : <></>
+                            )
+                        }
+                        {
+                            (user && user.user && user.user.responseBody && (user.user.responseBody.userRole === 'ADMIN' || user.user.responseBody.userRole === 'PM')?
+                                    <li><Link to="/workSummary">Work Summary</Link></li> : <></>
                             )
                         }
                     </ul>

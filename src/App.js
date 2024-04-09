@@ -9,6 +9,8 @@ import ServicesPage from "./components/containers/admin/ServicesPage";
 import ContactPage from "./components/containers/admin/ContactPage";
 import ProjectsPage from "./components/containers/admin/ProjectsPage";
 import DailyProgressReport from "./components/containers/admin/DailyProgressReport";
+import SummaryPage from "./components/containers/admin/SummaryPage";
+import WorkSummaryForApprovePage from "./components/containers/admin/WorkSummary";
 
 function App() {
 
@@ -25,6 +27,7 @@ function App() {
                             <Route path="/contact" element={<ContactPage />} />
                             <Route path="/projects" element={<ProjectsPage />} />
                             <Route path="/projects/:name" element={<DailyProgressReport />} />
+                            <Route path="/workSummary" element={<WorkSummaryForApprovePage />} />
                             <Route path="*" element={<Navigate to="/" />} />
                         </>
                     ) : (
